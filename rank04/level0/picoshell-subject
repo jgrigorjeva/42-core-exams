@@ -1,4 +1,4 @@
-/* Assignment name:    picoshell
+Assignment name:    picoshell
 Expected files:        picoshell.c
 Allowed functions:    close, fork, wait, exit, execvp, dup2, pipe
 ___
@@ -27,4 +27,5 @@ Examples:
 picoshell
 ./picoshell echo 'squalala' "|" cat "|" sed 's/a/b/g'
 squblblb/
-*/
+
+// The wording at the actual exam was slightly different and it did mention, that the number of open pipes should be limited to 30.
