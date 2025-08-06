@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+// This file is to help you test your picoshell. Something similar will be provided at the exam.
 // Declare the picoshell function
 int		picoshell(char **cmds[]);
 
