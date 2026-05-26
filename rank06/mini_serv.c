@@ -87,17 +87,13 @@ int	main(int argc, char **argv)
 
 	int portnum = atoi(argv[1]);
 	int sockfd;
-	// socklen_t len;
 	struct sockaddr_in servaddr; //server
-	// struct sockaddr_in cli; //client 
 
 	// socket create and verification
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); // server socket
 	if (sockfd == -1)
 		fatal();
-	// //we are not expected to print additional messages
-	// else 
-	// 	printf("Socket successfully created..\n");
+
 	bzero(&servaddr, sizeof(servaddr));
 
 	// assign IP, PORT
@@ -113,11 +109,6 @@ int	main(int argc, char **argv)
 		printf("Socket successfully binded..\n");
 	if (listen(sockfd, 10) != 0)
 		fatal();
-	// {
-	// 	printf("cannot listen\n");
-	// 	exit(0);
-	// }
-	// len = (socklen_t)sizeof(cli);
 	
 	int next_id = 0;
 	int max_fd = 0; //if a client disconnects, the next fd can take its fd, but the next id will be the previous client's id+1
@@ -140,7 +131,6 @@ int	main(int argc, char **argv)
 				continue;
 			if (fd == sockfd)
 			{
-				printf("client tries to connect\n");
 				int c = accept(sockfd, 0, 0); //accept new client
 				if (c<0)
 					continue; // if accept returns with an error
@@ -155,9 +145,7 @@ int	main(int argc, char **argv)
 				sprintf(message, "server: client %d just arrived\n", clients[c].id);
 				write(1, &message, strlen(message));
 				broadcast(fd, wr, message, max_fd);
-				// broadcast(fd) the message to all the other clients
-
-				
+				// broadcast(fd) the message to all the other clients	
 			}
 			else
 			{
@@ -168,7 +156,6 @@ int	main(int argc, char **argv)
 					char message[64];
 					bzero(&message, sizeof(message));
 					sprintf(message, "server: client %d just left\n", clients[fd].id);
-					write(1, &message, strlen(message));
 					broadcast(fd, wr, message, max_fd);
 					// breadcast message
 					free(clients[fd].buf); // free unfinished messages from this client's buffer
@@ -180,15 +167,13 @@ int	main(int argc, char **argv)
 					char *line = NULL;
 					char message[65536];
 					readbuf[n] = '\0'; // null terminate the message read previously
-					printf("message:\n%s", readbuf);
 					clients[fd].buf = str_join(clients[fd].buf, readbuf);
-					printf("client buffer:\n%s", clients[fd].buf);
 					while (extract_message(&(clients[fd].buf), &line))
 					{
 						sprintf(message, "client %d: %s", clients[fd].id, line);
 						write(1, &message, strlen(message));
-						broadcast(fd, wr, message, max_fd);
-						// broadcast message
+						broadcast(fd, wr, message, max_fd); // broadcast message
+						
 						free(line);
 						line = NULL;
 					}
@@ -200,19 +185,12 @@ int	main(int argc, char **argv)
 		
 		
 	}
-	for (int i = 0; i < max_fd; i++) // cleanup
+	for (int i = 0; i < max_fd; i++) // cleanup? could skip this
 	{
 		if (clients[i].buf)
 			free(clients[i].buf);
 		if (FD_ISSET(i, &cur))
 			close(i);
 	}
-	// connfd = accept(sockfd, (struct sockaddr *)&cli, &len);
-	// if (connfd < 0)
-	// {
-	// 	printf("server acccept failed...\n");
-	// 	exit(0);
-	// }
-	// else
-	// 	printf("server acccept the client...\n");
+
 }
